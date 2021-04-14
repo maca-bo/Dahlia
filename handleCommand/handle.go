@@ -8,6 +8,17 @@ import (
 )
 
 func (c *Command) Handle(cli *cloudiot.Service, clientID string) error {
+	if c.Operate == Unlock || c.Operate == Lock {
+		err := c.sendToDevice(cli, clientID)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return &UnimplCommandError{cmd: c.Operate}
+}
+
+func (c *Command) sendToDevice(cli *cloudiot.Service, clientID string) error {
 	payloadJSON, err := json.Marshal(c)
 	if err != nil {
 		return err
